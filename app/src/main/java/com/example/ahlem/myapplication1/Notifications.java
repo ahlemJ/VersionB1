@@ -107,7 +107,7 @@ String userID;
                     nombre=nombre+10;
                     reservation(nombre);
                     //  myRef.child(id).child("Newreservation").limitToFirst(10)
-                    adapter.notifyDataSetChanged();
+                   // adapter.notifyDataSetChanged();
                 }
             });}
         if(reservations.size()<10 && footer!=null) {notif.removeFooterView(footer);}
@@ -126,7 +126,7 @@ String userID;
 
 
 
-    private void reservation(int i) {
+    private void reservation(final int i) {
         reservations.clear();
 
         Query query = myRef.child(userID).child("notifreservation").orderByKey()
@@ -135,7 +135,7 @@ String userID;
         value1 = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                reservations.clear();
+                //reservations.clear();
 
                 for (DataSnapshot data : dataSnapshot.getChildren()) {
 
@@ -143,8 +143,8 @@ String userID;
                     reservations.add(reservation);
                     }
                 Collections.reverse(reservations);
-
-                if(reservations.size()>=10&& footer==null){
+                adapter.notifyDataSetChanged();
+                if(reservations.size()>=i && footer==null){
                     // footer = (View) inflater.inflate(R.layout.footer,list_reser1,false);
                     footer = ((LayoutInflater) getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.footer, null, false);
                     //footer = (ViewGroup)LayoutInflater.inflate(R.layout.footer,list_reser1,false);
@@ -157,10 +157,13 @@ String userID;
                             nombre=nombre+10;
                             reservation(nombre);
                             //  myRef.child(id).child("Newreservation").limitToFirst(10)
-                            adapter.notifyDataSetChanged();
+                           // adapter.notifyDataSetChanged();
                         }
                     });}
-                if(reservations.size()<10 && footer!=null) {notif.removeFooterView(footer);}
+                if(reservations.size()<i && footer!=null)
+                {notif.removeFooterView(footer);
+                footer=null;
+                }
                notif.setAdapter(adapter);
 //                notif.getChildAt(0).setBackgroundColor(getResources().getColor(R.color.colorPrimary1));
 

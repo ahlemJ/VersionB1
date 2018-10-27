@@ -49,7 +49,7 @@ public class AutoCompleteAdapterAct extends ArrayAdapter<StadeModel> {
         if (txtCustomer != null)
             txtCustomer.setText(customer.getFirstName());
         localisation.setText(customer.getLocalisation());
-        Picasso.with(context).load(customer.getProfilePic()).into(ivCustomerImage);
+       // Picasso.with(context).load(customer.getProfilePic()).into(ivCustomerImage);
 
         // if (ivCustomerImage != null && customer.getProfilePic() != null)
         //   Picasso.with(context).load(customer.getProfilePic()).into(ivCustomerImage);

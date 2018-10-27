@@ -61,6 +61,7 @@ public class StadeProfile extends AppCompatActivity {
     private SliderView sliderView;
     private LinearLayout mLinearLayout;
     ImageButton back, feedback;
+    TextView ballon,douche,boteille;
     ImageButton search1;
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,6 +70,10 @@ public class StadeProfile extends AppCompatActivity {
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
         Intent intent = getIntent();
         final String id = intent.getStringExtra("pos");
+
+        ballon=findViewById(R.id.ballon);
+        douche=findViewById(R.id.douche);
+        boteille=findViewById(R.id.bouteille);
        // final String  userID = intent.getStringExtra("userID");
         //final String  photoUrl = intent.getStringExtra("photoUser");
         nameprofile = findViewById(R.id.namestade);
@@ -92,7 +97,7 @@ public class StadeProfile extends AppCompatActivity {
 
 
       //  Toast.makeText(StadeProfile.this, userID , Toast.LENGTH_SHORT).show();
-        MultiTransformation multi = new MultiTransformation(
+       MultiTransformation multi = new MultiTransformation(
                 new RoundedCornersTransformation(128, 0, RoundedCornersTransformation.CornerType.BOTTOM));
         Glide.with(this).load(FirstActivity.user.get_filephoto())
                 .apply(bitmapTransform(multi))
@@ -169,6 +174,9 @@ public class StadeProfile extends AppCompatActivity {
                     if(profile==null){
                     profile = dataSnapshot.child("firstName").getValue().toString();}
                     nameprofile.setText(profile);
+                    ballon.setText(dataSnapshot.child("ballnumb").getValue().toString());
+                    boteille.setText(dataSnapshot.child("bottelnumb").getValue().toString());
+                    douche.setText(dataSnapshot.child("douchenumb").getValue().toString());
                     localisation.setText("Situé à "+dataSnapshot.child("localisation").getValue().toString());
                     phoneNumber.setText("Tél : "+dataSnapshot.child("phoneNumber").getValue().toString());
                     for (DataSnapshot snapshot : dataSnapshot.child("photoScroll").getChildren()) {
@@ -234,13 +242,13 @@ public class StadeProfile extends AppCompatActivity {
         ActivityManager activityManager = (ActivityManager) getApplicationContext()
                 .getSystemService(Context.ACTIVITY_SERVICE);
 
-        activityManager.moveTaskToFront(getTaskId(), 0);
+        //activityManager.moveTaskToFront(getTaskId(), 0);
     }
-    @Override
+   /* @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         // Do nothing or catch the keys you want to block
         return false;
-    }
+    }*/
     private boolean isNetworkAvailable() {
         boolean haveConnectedWifi = false;
         boolean haveConnectedMobile = false;

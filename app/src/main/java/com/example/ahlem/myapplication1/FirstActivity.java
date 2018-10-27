@@ -9,11 +9,13 @@ import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.media.Image;
+import android.media.MediaPlayer;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Parcelable;
+import android.os.Vibrator;
 import android.preference.PreferenceManager;
 import android.provider.ContactsContract;
 import android.provider.MediaStore;
@@ -77,16 +79,19 @@ Spinner spinner;
 TextView nameUser;
 String photoUser;
 static  UserInfos user;
-FirebaseAuth firebaseAuth;
-static  String name, lastname;
+
+static  String name;
     StorageReference storagereference;
-    SwipeRefreshLayout swipeRefreshLayout;
     StorageReference ref;
     ImageView notif, refresh ;
     private Uri filePath=null;
     private final int PICK_iMAGE_REQUEST = 71 ;
     static ValueEventListener  valuee;
     static  Integer number;
+    MediaPlayer mp;
+    Vibrator v;
+    FirebaseStorage storage;
+    String Img;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -95,6 +100,8 @@ static  String name, lastname;
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         database = FirebaseDatabase.getInstance();
         myRef = database.getReference("simpleusers");
+        storage = FirebaseStorage.getInstance();
+        storagereference = storage.getReference();
         cherchez = findViewById(R.id.chercher);
         reservation = findViewById(R.id.reservation);
         profile_pic = findViewById(R.id.profile_pic);
@@ -102,37 +109,25 @@ static  String name, lastname;
         nameUser = findViewById(R.id.name);
         notif = findViewById(R.id.notif);
         refresh=(ImageView)findViewById(R.id.refresh);
-      //  Toast.makeText(FirstActivity.this,Welcom.user.get_name().toString() +" "+ Welcom.user.getId() , Toast.LENGTH_LONG).show();
-
+        mp = MediaPlayer.create(getApplicationContext(), R.raw.googleevent);
+        v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
         refresh.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 refresh.setColorFilter(R.color.even);
-                /*if(user.get_name()!=null && user.get_filephoto()!=null && user.get_lastname()!=null)
-                {nameUser.setText(user.get_name() + " " +user.get_lastname());
-                    MultiTransformation multi = new MultiTransformation(
-                            new RoundedCornersTransformation(128, 0, RoundedCornersTransformation.CornerType.BOTTOM));
-                    Glide.with(getApplicationContext()).load(photoUser)
-                            .apply(bitmapTransform(multi))
-                            .into(profile_pic);
-                }*/
                 Intent intent = new Intent(FirstActivity.this,FirstActivity.class);
                 startActivity(intent);
                 finish();
             }
         });
 
-        final Intent intent = getIntent();
-        // userID = intent.getStringExtra("userID");
-
-        //user= new UserInfos()
         if (!isNetworkAvailable()) {
             RelativeLayout no = findViewById(R.id.no_connexion);
             no.setVisibility(View.VISIBLE);
         }
         if (isNetworkAvailable()) {
 
-            if (Welcom.user != null && Login.user== null) {
+            if (Welcom.user != null && Login.user== null && user==null) {
                 user = new UserInfos(Welcom.user.getId(), Welcom.user.get_name(), Welcom.user.get_lastname(), Welcom.user.get_filephoto(), Welcom.user.getMobile(), Welcom.user.getLocalisation());
                 uploadInfo();
             }
@@ -141,7 +136,7 @@ static  String name, lastname;
                 uploadInfo();
             }
             else {
-                Toast.makeText(FirstActivity.this,"1" , Toast.LENGTH_LONG).show();
+
                 userID = FirebaseAuth.getInstance().getCurrentUser().getUid();
                 final ProgressDialog progressDialog = new ProgressDialog(FirstActivity.this);
                 progressDialog.setTitle("Chargement...");
@@ -162,17 +157,7 @@ static  String name, lastname;
                     }
                 });
             }
-           /* userID = user.getId();
-            photoUser = user.get_filephoto();
-            if (photoUser != null) {
 
-                MultiTransformation multi = new MultiTransformation(
-                        new RoundedCornersTransformation(128, 0, RoundedCornersTransformation.CornerType.BOTTOM));
-                Glide.with(getApplicationContext()).load(photoUser)
-                        .apply(bitmapTransform(multi))
-                        .into(profile_pic);
-            }
-            nameUser.setText(user.get_name() + " " + user.get_lastname());*/
             String[] items = new String[]{"", "Paramètres", "Deconnexion"};
 
             ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, items) {
@@ -198,7 +183,7 @@ static  String name, lastname;
             };
 
             spinner.setAdapter(dataAdapter);
-            // spinner.setSelection(0);
+
             spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -209,8 +194,6 @@ static  String name, lastname;
                             break;
                         case 1:
                             Intent i = new Intent(FirstActivity.this, Parametre.class);
-                            //  i.putExtra("userID", userID);
-                            //i.putExtra("photoUser", photoUser);
                             startActivity(i);
                             finish();
                             break;
@@ -242,6 +225,8 @@ static  String name, lastname;
                     number = Integer.parseInt(dataSnapshot.getValue().toString());
                     if (number > 0) {
                         //Toast.makeText(getApplicationContext(), number + "  aaa", Toast.LENGTH_SHORT).show();
+                        v.vibrate(900);
+                        mp.start();
                         addnotifcation(number);
                     }
                 }
@@ -262,9 +247,9 @@ static  String name, lastname;
                         Intent intent = new Intent();
                         intent.setType("image/+");
                         intent.setAction(Intent.ACTION_GET_CONTENT);
-                        startActivityForResult(intent.createChooser(intent, "Select Picture"), PICK_iMAGE_REQUEST);
+                        startActivityForResult(intent.createChooser(intent, "Choisissez une image"), PICK_iMAGE_REQUEST);
                     }
-                    else {Toast.makeText(getApplicationContext(), "Vérifiez votre connexion internet puis refrechir", Toast.LENGTH_SHORT).show();}
+                    else {Toast.makeText(getApplicationContext(), "Vérifiez votre connexion internet puis rafraîchir", Toast.LENGTH_SHORT).show();}
                 }
             });
 
@@ -292,7 +277,7 @@ static  String name, lastname;
                     //i.putExtra("photoUser", photoUser);
                     startActivity(i);
                     finish();}
-                    else{Toast.makeText(getApplicationContext(), "Vérifiez votre connexion internet puis refrechir", Toast.LENGTH_SHORT).show();}
+                    else{Toast.makeText(getApplicationContext(), "Vérifiez votre connexion internet puis rafraîchir", Toast.LENGTH_SHORT).show();}
                 }
             });
             cherchez.setOnClickListener(new View.OnClickListener() {
@@ -304,7 +289,7 @@ static  String name, lastname;
                         //i.putExtra("photoUser", photoUser);
                         startActivity(i);
                         finish();
-                    }else {Toast.makeText(getApplicationContext(), "Vérifiez votre connexion internet puis refrechir", Toast.LENGTH_SHORT).show();}
+                    }else {Toast.makeText(getApplicationContext(), "Vérifiez votre connexion internet puis rafraîchir", Toast.LENGTH_SHORT).show();}
                 }
             });
         }
@@ -331,7 +316,7 @@ static  String name, lastname;
             super.onActivityResult(requestCode,resultCode,data);
             try{
                 Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(),filePath);
-
+                profile_pic.setImageBitmap(bitmap);
                 uploadImag();
             }catch(IOException e){
                 e.printStackTrace();
@@ -343,7 +328,7 @@ static  String name, lastname;
 
         super.onPause();
         ActivityManager activityManager = (ActivityManager) getApplicationContext().getSystemService(Context.ACTIVITY_SERVICE);
-        activityManager.moveTaskToFront(getTaskId(), 0);
+      //  activityManager.moveTaskToFront(getTaskId(), 0);
 
     }
     @Override
@@ -355,41 +340,43 @@ static  String name, lastname;
      * Prepare some dummy data for gridview
      */
     private void uploadImag(){
-       if(filePath != null){
-           final ProgressDialog progressDialog = new ProgressDialog(this);
-           progressDialog.setTitle("Téléchargement...");
-           progressDialog.show();
-           ref = storagereference.child("image/"+ UUID.randomUUID().toString());
-           ref.putFile(filePath).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
-               @Override
-               public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
-                   progressDialog.dismiss();
-                   Toast.makeText(FirstActivity.this, "Téléchargée", Toast.LENGTH_SHORT).show();
-               }
-           }).addOnFailureListener(new OnFailureListener() {
-               @Override
-               public void onFailure(@NonNull Exception e) {
-                   progressDialog.dismiss();
-                   Toast.makeText(FirstActivity.this, "Echec de téléchargement"+e.getMessage(), Toast.LENGTH_SHORT).show();
-               }
-           }).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
-               @Override
-               public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
-                   double progress = (100.0+taskSnapshot.getBytesTransferred()/taskSnapshot.getTotalByteCount());
-                   progressDialog.setMessage("Upload .. ");
-               }
-           });
+        if(filePath != null){
+            final ProgressDialog progressDialog = new ProgressDialog(this);
+            progressDialog.setTitle("Téléchargement...");
+            progressDialog.show();
+            ref = storagereference.child("image/"+ UUID.randomUUID().toString());
+            ref.putFile(filePath).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+                    progressDialog.dismiss();
+                    Toast.makeText(FirstActivity.this, "Téléchargée", Toast.LENGTH_SHORT).show();
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    progressDialog.dismiss();
+                    Toast.makeText(FirstActivity.this, "Echec de téléchargement"+e.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            }).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+                    double progress = (100.0+taskSnapshot.getBytesTransferred()/taskSnapshot.getTotalByteCount());
+                    progressDialog.setMessage("Upload .. ");
+                }
+            });
             ref.putFile(filePath).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                   /* Img=taskSnapshot.getDownloadUrl().toString();
-                    MultiTransformation multi = new MultiTransformation(
-                            new RoundedCornersTransformation(128, 0, RoundedCornersTransformation.CornerType.BOTTOM));
-                    Glide.with(getApplicationContext()).load(Img)
-                            .apply(bitmapTransform(multi))
-                            .into(profile_pic);
-                    myRef.child(userID).child("pofilephoto").push().setValue(Img);
-               */ }
+                    Img=taskSnapshot.getDownloadUrl().toString();
+                    if(Welcom.user!=null)
+                    {
+                        Welcom.user.set_filephoto(Img);
+                    }else {
+                        Login.user.set_filephoto(Img);
+                    }
+                    user.set_filephoto(Img);
+                    myRef.child(userID).child("_filephoto").setValue(Img);
+                }
             });
         }
         else {
@@ -416,11 +403,13 @@ static  String name, lastname;
     }
 public  void uploadInfo()
 {   userID = user.getId();
+    Toast.makeText(FirstActivity.this, photoUser , Toast.LENGTH_SHORT).show();
+
     photoUser = user.get_filephoto();
     if (photoUser != null) {
-
         MultiTransformation multi = new MultiTransformation(
                 new RoundedCornersTransformation(128, 0, RoundedCornersTransformation.CornerType.BOTTOM));
+       // RoundedCornersTransformation round = new RoundedCornersTransformation(128,0,RoundedCornersTransformation.CornerType.BOTTOM);
         Glide.with(getApplicationContext()).load(photoUser)
                 .apply(bitmapTransform(multi))
                 .into(profile_pic);

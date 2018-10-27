@@ -13,14 +13,16 @@
 
     <SearchView
         android:id="@+id/search"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="56dp"
         android:iconifiedByDefault="false"
+        android:layout_marginRight="32dp"
         android:background="@color/colorPrimary"
         android:queryHint="Cherchez votre terrain"
         android:searchIcon="@drawable/search_icone"
         android:closeIcon="@drawable/close_icone"
-
+        android:queryBackground="@android:color/transparent"
+        android:divider="@color/even"
         >
 
         <requestFocus />

@@ -48,13 +48,13 @@ import static com.bumptech.glide.request.RequestOptions.bitmapTransform;
 
 public class Calendrierr  extends AppCompatActivity {
   ArrayList<liststate> list;
-   ListView listview ;
+  ListView listview ;
     private TextView mDisplayDate;
     private DatePickerDialog.OnDateSetListener mDateSetListener;
     FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference myRef = database.getReference("users");
     DatabaseReference myRef1 = database.getReference("simpleusers");
-    ChildEventListener value;
+    ChildEventListener value , value1;
     String date,Email;
     ImageView back,refresh;
     String userID, position;
@@ -121,13 +121,12 @@ public class Calendrierr  extends AppCompatActivity {
                 finish();
             }
         });
-listview = (ListView) findViewById(R.id.timelist);
+      listview = (ListView) findViewById(R.id.timelist);
       values = new String[] { "00:00-01:30", "01:30-03:00", "03:00-04:30",
                 "04:30-06:00", "06:00-07:30", "07:30-09:00", "09:00-10:30", "10:30-12:00",
                 "12:00-13:30", "13:30-15:00", "15:00-16:30", "16:30-18:00", "18:00-19:30", "19:30-21:00",
                 "21:00-22:30", "22:30-00:00" };
         list = new ArrayList<>();
-
 
         for (int i = 0; i < values.length; ++i) {
             list.add(new liststate(0,values[i]));
@@ -160,12 +159,12 @@ listview = (ListView) findViewById(R.id.timelist);
             public void onDateSet(DatePicker datePicker, int year, int month, int day) {
                 month = month + 1;
                 Log.d("Calendrier", "onDateSet: mm-dd-yyy: " + day + "-" + month + "-" + year);
-
                 date = year+"-"+month+"-"+day;
-
                 mDisplayDate.setText(date);
                 restart();
-                if(isNetworkAvailable()) {
+                if(isNetworkAvailable())
+                {
+                    restart();
                     adapterlist();
                 }
                 else {Toast.makeText(Calendrierr.this, "Pas de connexion internet", Toast.LENGTH_LONG).show();
@@ -179,7 +178,7 @@ listview = (ListView) findViewById(R.id.timelist);
 
     }
     public  void  adapterlist(){
-        Query query=myRef.child(position).child("Newreservation").orderByChild("date").equalTo(date);
+        Query query=myRef.child(position).child("reservation").orderByChild("date").equalTo(date);
 
 
         value = new ChildEventListener() {
@@ -187,7 +186,6 @@ listview = (ListView) findViewById(R.id.timelist);
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 list.get(Integer.parseInt(dataSnapshot.child("etat").getValue().toString())).setEtat(1);
-
                 adapter.notifyDataSetChanged();
 
             }
@@ -209,7 +207,36 @@ listview = (ListView) findViewById(R.id.timelist);
 
         query.addChildEventListener(value);
 
-        myRef.child(position).child("tempBloquer").child(date).addListenerForSingleValueEvent(new ValueEventListener() {
+        Query query1=myRef.child(position).child("Newreservation").orderByChild("date").equalTo(date);
+
+
+        value1 = new ChildEventListener() {
+            @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                list.get(Integer.parseInt(dataSnapshot.child("etat").getValue().toString())).setEtat(1);
+                adapter.notifyDataSetChanged();
+
+            }
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+            }
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+                list.get(Integer.parseInt(dataSnapshot.child("etat").getValue().toString())).setEtat(0);
+                adapter.notifyDataSetChanged();
+            }
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        };
+
+        query1.addChildEventListener(value1);
+
+        myRef.child(position).child("tempBloquer").child(date).addValueEventListener(new ValueEventListener() {
             @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -232,7 +259,10 @@ listview = (ListView) findViewById(R.id.timelist);
     public  void restart(){
         for(int i=0;i<list.size();i++){
 list.get(i).setEtat(0);
+
+
         }
+
         adapter.notifyDataSetChanged();
 
     }
@@ -258,8 +288,10 @@ list.get(i).setEtat(0);
                                          myCalendar = Calendar.getInstance();
                                          DateFormat df = new SimpleDateFormat("EEE, d MMM yyyy, HH:mm");
                                          String dateExact = df.format(myCalendar.getTime());
-                                         //DateFormat df1 = new SimpleDateFormat("HH:mm");
-                                         // String heure = df1.format(myCalendar.getTime());
+                                         list.get(position).setEtat(1);
+                                         im[0] =(ImageView)view.findViewById(R.id.check_bloc);
+                                         im[0].setImageResource(R.drawable.check);
+                                         im[0].setBackgroundResource(R.color.colorPrimary);
                                          writeNewReservation(myRef, myRef1, userID, date, values[position], position, dateExact);
                                          Toast.makeText(Calendrierr.this, "Bien enregistrée", Toast.LENGTH_LONG).show();
                                          dialog.cancel();
@@ -305,6 +337,7 @@ list.get(i).setEtat(0);
         NewReservation newReservation = new NewReservation( date, heure, Integer.toString(etat),DateDeDemande, photoUrl,userID);
       // NewReservation newReservation1 = new NewReservation( date, heure, Integer.toString(etat),DateDeDemande, idStade);
         //Toast.makeText(Calendrierr.this,photoUrl , Toast.LENGTH_LONG).show();
+
 
         String key = databaseReference.child(idStade).child("Newreservation").push().getKey().toString();
 

@@ -25,25 +25,29 @@
 
 <TextView
     android:id="@+id/titre"
-    android:layout_width="match_parent"
+    android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:textSize="21dp"
     android:textColor="#232F34"
+    android:text="Tournoi "
     android:layout_marginLeft="16dp"
+    android:layout_marginRight="16dp"
     android:textStyle="bold"
+    android:layout_marginTop="8dp"
     android:typeface="normal"
-    android:layout_marginTop="16dp"
     />
 
     <TextView
             android:id="@+id/description"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="17dp"
-            android:textColor="@color/grey"
+            android:textColor="#232F34"
             android:layout_marginLeft="16dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="16dp"
+        android:text="soyez nombreux à nous rejoindre"
+        android:layout_marginRight="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
         />
 
 </LinearLayout>
@@ -56,8 +60,8 @@
         android:layout_height="wrap_content"
         android:adjustViewBounds="true"
         android:layout_below="@+id/lin"
-
         android:layout_marginBottom="16dp"
+
       />
 </RelativeLayout>
 </android.support.v7.widget.CardView>

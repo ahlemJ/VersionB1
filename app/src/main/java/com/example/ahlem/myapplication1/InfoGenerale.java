@@ -106,7 +106,7 @@ Button confirmer;
         ActivityManager activityManager = (ActivityManager) getApplicationContext()
                 .getSystemService(Context.ACTIVITY_SERVICE);
 
-        activityManager.moveTaskToFront(getTaskId(), 0);
+        //activityManager.moveTaskToFront(getTaskId(), 0);
     }
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {

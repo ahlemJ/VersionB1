@@ -43,9 +43,7 @@ if(getValue("userID")==-1){
     finish();
 }
 else {
-    //final ProgressDialog progressDialog = new ProgressDialog(Welcom.this);
-  //  progressDialog.setTitle("Authentification...");
-//    progressDialog.show();
+
     id=getvalue("userID",getValue("userID"));
     Email=getvalue("Email",getValue("Email"));
 
@@ -58,8 +56,6 @@ else {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 user = new UserInfos(id, dataSnapshot.child("_name").getValue().toString(), dataSnapshot.child("_lastname").getValue().toString(), dataSnapshot.child("_filephoto").getValue().toString(), (dataSnapshot.child("Mobile").getValue().toString()), dataSnapshot.child("localisation").getValue().toString());
-                //user = dataSnapshot.getValue(UserInfos.class);
-                // user.setId(id);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);
                 finish();

@@ -41,10 +41,14 @@ public class CalendrierAdapter extends ArrayAdapter<liststate > {
         String text1 = users.get(position).getTemps();
         int etat=users.get(position).getEtat();
 
-if (etat==0){state.setImageDrawable(null);}
+if (etat==0)
+       {
+          state.setImageDrawable(null);
+          state.setBackgroundResource(R.color.even);
+       }
         else if(etat==1){
-             state.setImageResource(R.drawable.check);
-    state.setBackgroundResource(R.color.colorPrimary);
+           state.setImageResource(R.drawable.check);
+           state.setBackgroundResource(R.color.colorPrimary);
          }
          else if(etat==2){
              state.setImageResource(R.drawable.closex);

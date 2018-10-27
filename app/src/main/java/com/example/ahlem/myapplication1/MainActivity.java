@@ -39,15 +39,9 @@ import static com.bumptech.glide.request.RequestOptions.bitmapTransform;
 public class MainActivity extends AppCompatActivity  implements SearchView.OnQueryTextListener{
     FirebaseDatabase database;
     DatabaseReference myRef;
-   // ListView listView ;
-    //ArrayList<String> name = new ArrayList<String>();
-  //  ArrayList<String> Id = new ArrayList<String>();
-    //int i=1;
-   SearchView search ;
+    SearchView search ;
 ImageView profile_pic;
-
-    //AutoCompleteAdapter adapter = null;
-    public static   ArrayList<StadeModel> customers ;
+public static   ArrayList<StadeModel> customers ;
     public  ArrayList<StadeModel> customers1 ;
     public  ListView list;
     ImageView s;
@@ -63,7 +57,6 @@ ImageView profile_pic;
       Intent intent = getIntent();
        final String  userID = intent.getStringExtra("userID");
        final String  photoUrl = intent.getStringExtra("photoUser");
-     //   Toast.makeText(MainActivity.this, userID , Toast.LENGTH_SHORT).show();
 
         list= findViewById(R.id.listview);
 
@@ -88,8 +81,7 @@ ImageView profile_pic;
                 finish();
             }
         });
-       // ImageView searchIcon = (ImageView)search.findViewById(android.support.v7.appcompat.R.id.search_mag_icon);
-       // searchIcon.setImageResource(R.drawable.search_icone);
+
         int closeButtonId = getResources().getIdentifier("android:id/search_close_btn", null, null);
         ImageView closeButtonImage = (ImageView) search.findViewById(closeButtonId);
         closeButtonImage.setImageResource(R.drawable.close_icone);
@@ -97,18 +89,10 @@ ImageView profile_pic;
         int ButtonId = getResources().getIdentifier("android:id/search_go_btn", null, null);
         ImageView ButtonImage = (ImageView) search.findViewById(ButtonId);
         ButtonImage.setImageResource(R.drawable.search_icone);
-        /*for (int i = 0; i < FirstActivity.customersF.size(); i++) {
-
-            StadeModel stadeModel = FirstActivity.customersF.get(i);
-            // Binds all strings into an array
-            customers1.add(stadeModel);
-        }*/
 
         adapter1 = new AutoCompleteAdapter(MainActivity.this,customers1);
        // list.setAdapter(adapter1);
         list.setVisibility(View.INVISIBLE);
-       // adapter1.notifyDataSetChanged();
-       // search.setOnQueryTextListener(MainActivity.this);
         database = FirebaseDatabase.getInstance();
         myRef = database.getReference("users");
 
@@ -138,7 +122,6 @@ ImageView profile_pic;
                 list.setAdapter(adapter1);
                 adapter1.notifyDataSetChanged();
                 search.setOnQueryTextListener(MainActivity.this);
-               // Toast.makeText(getApplicationContext(), MainActivity.customers.toString(), Toast.LENGTH_SHORT).show();
 
             }
 
@@ -203,7 +186,7 @@ ImageView profile_pic;
         ActivityManager activityManager = (ActivityManager) getApplicationContext()
                 .getSystemService(Context.ACTIVITY_SERVICE);
 
-        activityManager.moveTaskToFront(getTaskId(), 0);
+       // activityManager.moveTaskToFront(getTaskId(), 0);
     }
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {

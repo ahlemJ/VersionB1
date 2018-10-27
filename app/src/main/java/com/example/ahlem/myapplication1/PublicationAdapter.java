@@ -74,7 +74,10 @@ public class PublicationAdapter extends ArrayAdapter<Publication> {
 
                  }
                  else {image.setVisibility(View.GONE);}
-             if (titre1!=null) {  titre.setText(titre1);}
+             if (titre1!=null) {
+                 //titre1 = String.valueOf(titre1.charAt(0)).toUpperCase() + titre1.subSequence(1, text.length());
+                 titre1 = titre1.substring(0,1).toUpperCase() + titre1.substring(1);
+                 titre.setText(titre1);}
              if (text1!=null) {  text.setText(text1);}
 
 

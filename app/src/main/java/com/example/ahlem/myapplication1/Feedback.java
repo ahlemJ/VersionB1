@@ -23,6 +23,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -48,7 +49,8 @@ import java.util.UUID;
 
 
 public class Feedback extends AppCompatActivity {
-    Button validd, addph;
+    TextView validd;
+    ImageView addph;
     String Img;
     ImageView back,img,refrech;
     EditText publication,title;
@@ -69,15 +71,16 @@ String id, userID,photoUrl;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.addpublication);
         setRequestedOrientation (ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-        back = (ImageView) findViewById(R.id.back10);
-        addph = (Button) findViewById(R.id.addph);
-        validd=(Button)findViewById(R.id.validd);
+        back = (ImageView) findViewById(R.id.back);
+        addph =  findViewById(R.id.addph);
+        validd=findViewById(R.id.validd);
         publication = (EditText) findViewById(R.id.publicationn);
         title = (EditText) findViewById(R.id.titlee);
 
         img=(ImageView)findViewById(R.id.img);
         storage = FirebaseStorage.getInstance();
         storagereference = storage.getReference();
+       // Toast.makeText(Feedback.this,FirstActivity.name + " " + FirstActivity.lastname, Toast.LENGTH_LONG).show();
 
         Intent intent = getIntent();
           id = intent.getStringExtra("pos");
@@ -85,7 +88,7 @@ String id, userID,photoUrl;
           //photoUrl = intent.getStringExtra("photoUser");
         userID= FirstActivity.user.getId();
         photoUrl=FirstActivity.user.get_filephoto();
-        refrech=(ImageView)findViewById(R.id.refresh2);
+        refrech=(ImageView)findViewById(R.id.refresh);
         refrech.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -147,10 +150,10 @@ String id, userID,photoUrl;
 
 
                   publicat.setText(text);
-                  publicat.setLastname(FirstActivity.lastname);
-                  publicat.setName(FirstActivity.name);
+                  publicat.setLastname(FirstActivity.user.get_lastname());
+                  publicat.setName(FirstActivity.user.get_name());
                   publicat.setPhotoProfile(photoUrl);
-                  publicat.setKey(FirstActivity.user.getId());
+                 // publicat.setKey(FirstActivity.user.getId());
                   myRef.child(id).child("feedback").push().setValue(publicat);
                       Toast.makeText(Feedback.this,publicat.toString() , Toast.LENGTH_LONG).show();
 
@@ -269,7 +272,7 @@ rempli=true;
             ActivityManager activityManager = (ActivityManager) getApplicationContext()
                     .getSystemService(Context.ACTIVITY_SERVICE);
 
-            activityManager.moveTaskToFront(getTaskId(), 0);
+           // activityManager.moveTaskToFront(getTaskId(), 0);
         }
         @Override
         public boolean onKeyDown ( int keyCode, KeyEvent event){

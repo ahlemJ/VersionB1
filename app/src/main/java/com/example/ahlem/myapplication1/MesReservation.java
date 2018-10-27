@@ -59,7 +59,7 @@ String id ;
   static   String  userID;
     String  photoUrl1;
 
-ArrayList<NewReservation> reservations;
+ ArrayList<NewReservation> reservations;
     static ValueEventListener value1;
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -81,10 +81,10 @@ ArrayList<NewReservation> reservations;
         adapter= new ReservationAdapter(this , reservations);
         Intent intent = getIntent();
          userID = intent.getStringExtra("userID");
-          photoUrl1 = intent.getStringExtra("photoUser");
+         // photoUrl1 = intent.getStringExtra("photoUser");
         MultiTransformation multi = new MultiTransformation(
                 new RoundedCornersTransformation(128, 0, RoundedCornersTransformation.CornerType.BOTTOM));
-        Glide.with(this).load(userID)
+        Glide.with(this).load(FirstActivity.user.get_filephoto())
                 .apply(bitmapTransform(multi))
                 .into(profile_pic);
 
@@ -131,11 +131,13 @@ ArrayList<NewReservation> reservations;
                     nombre=nombre+10;
                     reservation(nombre);
                     //  myRef.child(id).child("Newreservation").limitToFirst(10)
-                    adapter.notifyDataSetChanged();
+
                 }
             });}
         if(reservations.size()<10 && footer!=null) {list_reser1.removeFooterView(footer);}
-        if(reservations.isEmpty())  { reservation(10);}
+        if(reservations.isEmpty())  {
+            reservation(10);
+             }
         else {list_reser1.setAdapter(adapter);}
 
          FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -228,9 +230,8 @@ ArrayList<NewReservation> reservations;
    }
 
 
-    private void reservation(int i) {
-      reservations.clear();
-      reservationId.clear();
+    private void reservation(final int i) {
+
         Query query = myRef.child(FirstActivity.user.getId()).child("Myreservation").orderByKey()
                 .limitToLast(i);
 
@@ -240,26 +241,16 @@ ArrayList<NewReservation> reservations;
                 reservations.clear();
                 reservationId.clear();
                 for (DataSnapshot data : dataSnapshot.getChildren()) {
-
-                    // StadeModel stadeModel = data.getValue(StadeModel.class);
-
-                    reservation = data.getValue(NewReservation.class);
-                   reservationId.add(data.child("key").getValue().toString());
-                   //reservationId.add(data.getKey());
-                    //addReservation(reservation);
-                   reservations.add(reservation);
-
-
-
+                    
+                    reservationId.add(data.getKey().toString());
+                    reservations.add(new NewReservation(data.child("date").getValue().toString(),data.child("heure").getValue().toString(),data.child("etat").getValue().toString(),data.child("dateDeDemande").getValue().toString(),data.child("profilephoto").getValue().toString(),data.child("id").getValue().toString()));
 
                 }
                 Collections.reverse(reservations);
-               // Toast.makeText(MesReservation.this,  reservations.get(2).getIdTerrain(), Toast.LENGTH_SHORT).show();
                 Collections.reverse(reservationId);
-                if(reservations.size()>=10&& footer==null){
-                     // footer = (View) inflater.inflate(R.layout.footer,list_reser1,false);
+                adapter.notifyDataSetChanged();
+                if(reservations.size()>=i&& footer==null){
                     footer = ((LayoutInflater) getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.footer, null, false);
-                    //footer = (ViewGroup)LayoutInflater.inflate(R.layout.footer,list_reser1,false);
 
                     list_reser1.addFooterView(footer,null,true);
                     button=(Button)findViewById(R.id.ajouter);
@@ -268,11 +259,10 @@ ArrayList<NewReservation> reservations;
                         public void onClick(View v) {
                             nombre=nombre+10;
                             reservation(nombre);
-                            //  myRef.child(id).child("Newreservation").limitToFirst(10)
-                            adapter.notifyDataSetChanged();
+
                         }
                     });}
-                if(reservations.size()<10 && footer!=null) {list_reser1.removeFooterView(footer);}
+                if(reservations.size()<i && footer!=null) {list_reser1.removeFooterView(footer); footer=null;}
                 list_reser1.setAdapter(adapter);
 
             }
@@ -286,7 +276,6 @@ ArrayList<NewReservation> reservations;
     }
 
     private void addReservation(final NewReservation reservation1) {
-        //final NewReservation reservation1=reservation;
         String id = reservation.getId();
 
         myRef1.child(id).addListenerForSingleValueEvent(new ValueEventListener() {
@@ -304,8 +293,8 @@ ArrayList<NewReservation> reservations;
 
             }
         });
-       // Toast.makeText(getApplicationContext(),  , Toast.LENGTH_SHORT).show();
-       // list_reser1.setAdapter(adapter);
+
+
 
     }
 

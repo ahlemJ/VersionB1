@@ -72,13 +72,13 @@ public class Login extends AppCompatActivity {
                     final String password = passwd.getText().toString();
 
                     if (TextUtils.isEmpty(pseudo)) {
-                        Toast.makeText(getApplicationContext(), "Enter email address!", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(), "Entrer votre addresse mail!", Toast.LENGTH_SHORT).show();
                         return;
                     }
 
                     if (TextUtils.isEmpty(password)) {
 
-                        Toast.makeText(getApplicationContext(), "Enter password!", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(), "Entrer votre mot de passe!", Toast.LENGTH_SHORT).show();
                         return;
                     }
 
@@ -99,26 +99,18 @@ public class Login extends AppCompatActivity {
 
                                         id = FirebaseAuth.getInstance().getCurrentUser().getUid();
                                         String Email = FirebaseAuth.getInstance().getCurrentUser().getEmail();
-//                                   String photo = FirebaseAuth.getInstance().getCurrentUser().getPhotoUrl().toString();
-                                        // Toast.makeText(Login.this, Email, Toast.LENGTH_LONG).show();
-                                        // String Email1 = log.getText().toString();
+//
                                         setValue(id.length(), "userID");
                                         setValue(Email.length(), "Email");
 
                                         setvalue(id, "userID");
                                         setvalue(Email, "Email");
                                         final Intent intent = new Intent(Login.this, FirstActivity.class);
-                                        //intent.putExtra("userID", id);
-                                        //intent.putExtra("Email", log.getText().toString());
+
                                         myRef.child(id).addListenerForSingleValueEvent(new ValueEventListener() {
                                             @Override
                                             public void onDataChange(DataSnapshot dataSnapshot) {
-                                                // useremodel= new StadeModel(0,dataSnapshot.child("firstName").getValue().toString(),dataSnapshot.child("localisation").getValue().toString(),id,dataSnapshot.child("profilePic").getValue().toString(),Integer.parseInt(dataSnapshot.child("phoneNumber").getValue().toString()),Integer.parseInt(dataSnapshot.child("bottelnumb").getValue().toString()));
                                                 user= new UserInfos(id,dataSnapshot.child("_name").getValue().toString(),dataSnapshot.child("_lastname").getValue().toString(),dataSnapshot.child("_filephoto").getValue().toString(),(dataSnapshot.child("Mobile").getValue().toString()),dataSnapshot.child("localisation").getValue().toString());
-                                               // Toast.makeText(Login.this, user.getId().toString(), Toast.LENGTH_LONG).show();
-                                                //user = dataSnapshot.getValue(UserInfos.class);
-                                                  //user.setId(id);
-
                                                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                                 startActivity(intent);
                                                 finish();
@@ -176,7 +168,7 @@ public class Login extends AppCompatActivity {
         ActivityManager activityManager = (ActivityManager) getApplicationContext()
                 .getSystemService(Context.ACTIVITY_SERVICE);
 
-        activityManager.moveTaskToFront(getTaskId(), 0);
+       // activityManager.moveTaskToFront(getTaskId(), 0);
     }
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {

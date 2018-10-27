@@ -39,7 +39,7 @@ public class ReservationAdapter extends ArrayAdapter<NewReservation> {
         database = FirebaseDatabase.getInstance();
         myRef = database.getReference("users");
         myRef1 = database.getReference("simpleusers");
-        NewReservation user = getItem(position);
+        final NewReservation user = getItem(position);
         // Check if an existing view is being reused, otherwise inflate the view
         if (convertView == null) {
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.adapter_view_layout, parent, false);
@@ -53,14 +53,14 @@ public class ReservationAdapter extends ArrayAdapter<NewReservation> {
        temps.setText(user.getDate());
        dateDereservation.setText(user.getHeure());
       // key= user.getId();
-        key=MesReservation.reservationId.get(position);
+        key=user.getId();
      //  key1= user.getId();
 
         annuler.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                // Toast.makeText(getContext(),  key1 + "  id stade ", Toast.LENGTH_SHORT).show();
-                Toast.makeText(getContext(),  MesReservation.reservationId.get(position) + "  id reser ", Toast.LENGTH_SHORT).show();
+               // Toast.makeText(getContext(),  MesReservation.reservationId.get(position) + "  id reser ", Toast.LENGTH_SHORT).show();
                 AlertDialog.Builder builder1 = new AlertDialog.Builder(getContext());
                 builder1.setMessage("Voulez-vous confirmer l'annulation de cette réservation ?");
                 builder1.setCancelable(true);
@@ -71,10 +71,11 @@ public class ReservationAdapter extends ArrayAdapter<NewReservation> {
                             public void onClick(DialogInterface dialog, int id) {
                                 String idUser = FirstActivity.user.getId();
                                 if(key!=null && idUser!=null ) {
-                                    myRef.child(key).child("Newreservation").child(MesReservation.reservationId.get(position)).removeValue();
-                                    //Toast.makeText(getContext(),  key1 + "  id stade ", Toast.LENGTH_SHORT).show();
+
+                                    myRef.child(key).child("reservation").child(user.getProfilephoto()).removeValue();
                                     myRef1.child(idUser).child("Myreservation").child(MesReservation.reservationId.get(position)).removeValue();
                                     users.remove(position);
+                                    MesReservation.reservationId.remove(position);
                                     notifyDataSetChanged();
                                     dialog.cancel();
                                     Toast.makeText(getContext(), "Annulation effectuée", Toast.LENGTH_LONG).show();
